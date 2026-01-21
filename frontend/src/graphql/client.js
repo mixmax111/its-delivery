@@ -2,7 +2,7 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-    // ECCOLO! L'indirizzo nuovo che funziona:
+    // COPIA QUESTO LINK ESATTO (È QUELLO NUOVO CHE FUNZIONA!)
     uri: 'https://adanna-sja34-87786fd1c68b.herokuapp.com/graphql',
 });
 
