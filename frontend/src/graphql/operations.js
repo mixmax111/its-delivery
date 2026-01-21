@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-// 1. LOGIN (Mutation vera: scambia email/password con il Token)
+// LOGIN
 export const LOGIN_MUTATION = gql`
     mutation Login($email: String!, $password: String!) {
         login(email: $email, password: $password) {
@@ -10,7 +10,7 @@ export const LOGIN_MUTATION = gql`
     }
 `;
 
-// 2. PROFILO UTENTE (Da usare DOPO aver fatto login per sapere chi sei)
+// PROFILO UTENTE
 export const GET_ME = gql`
     query Me {
         me {
@@ -22,7 +22,7 @@ export const GET_ME = gql`
     }
 `;
 
-// 3. REGISTRAZIONE
+// REGISTRAZIONE
 export const REGISTER_USER = gql`
     mutation Register($email: String!, $password: String!, $address: String) {
         registerUser(email: $email, password: $password, address: $address) {
@@ -32,7 +32,7 @@ export const REGISTER_USER = gql`
     }
 `;
 
-// 4. MENU PIZZE
+// MENU PIZZE
 export const GET_MENU = gql`
     query GetMenu {
         getMenu {
@@ -46,17 +46,17 @@ export const GET_MENU = gql`
     }
 `;
 
-// 5. CREA ORDINE
+// CREA ORDINE
 export const CREATE_ORDER = gql`
     mutation CreateOrder($productIds: [ID], $quantities: [Float]) {
         createOrder(productIds: $productIds, quantities: $quantities) {
             id
-            totalAmount # Assicurati che nel backend si chiami così (o total_amount)
+            totalAmount
         }
     }
 `;
 
-// 6. I MIEI ORDINI
+// I MIEI ORDINI
 export const GET_MY_ORDERS = gql`
     query GetMyOrders {
         getMyOrders {
