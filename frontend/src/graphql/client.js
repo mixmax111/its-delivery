@@ -2,9 +2,8 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-    uri: import.meta.env.VITE_API_URL || 'http://localhost:4001/graphql',
+    uri: '/api/graphql',
 });
-
 
 const authLink = setContext((_, { headers }) => {
     const token = localStorage.getItem('auth_token');

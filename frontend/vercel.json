@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/graphql",
+      "destination": "https://adanna-sja34.herokuapp.com/graphql"
+    }
+  ]
+}
