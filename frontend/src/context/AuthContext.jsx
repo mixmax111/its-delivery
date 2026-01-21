@@ -1,61 +1,100 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import { useMutation, useLazyQuery, useApolloClient } from '@apollo/client';
+import { LOGIN_MUTATION, GET_ME, REGISTER_USER } from '../graphql/operations';
 
-export const AuthContext = createContext({});
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // Usiamo 'auth_token' per coerenza con il client.js che abbiamo sistemato prima
+    // 1. Inizializziamo lo stato leggendo il token dal disco
     const [token, setToken] = useState(localStorage.getItem('auth_token'));
+    const [user, setUser] = useState(null);
+    const client = useApolloClient();
 
+    // --- HOOKS DI APOLLO ---
+    // Mutation per il Login
+    const [loginMutation] = useMutation(LOGIN_MUTATION);
+
+    // Mutation per la Registrazione
+    const [registerMutation] = useMutation(REGISTER_USER);
+
+    // Query per scaricare il profilo (Lazy = la chiamiamo noi quando serve)
+    const [getMe] = useLazyQuery(GET_ME, {
+        fetchPolicy: 'network-only', // Non usare la cache, chiedi sempre al server
+        onCompleted: (data) => {
+            if (data && data.me) {
+                setUser(data.me);
+            }
+        },
+        onError: () => {
+            // Se il token non è valido, facciamo logout forzato
+            logout();
+        }
+    });
+
+    // --- EFFETTO: AL CARICAMENTO PAGINA ---
+    useEffect(() => {
+        // Se c'è un token ma non abbiamo i dati dell'utente, scaricali
+        if (token && !user) {
+            getMe();
+        }
+    }, [token, user, getMe]);
+
+    // --- FUNZIONE LOGIN ---
     const login = async (email, password) => {
         try {
-            // 1. Chiediamo al Backend il token VERO
-            const response = await fetch('https://adanna-sja34-87786fd1c68b.herokuapp.com/graphql', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    query: `
-                        mutation Login($email: String!, $password: String!) {
-                            login(email: $email, password: $password) {
-                                token
-                                userId
-                            }
-                        }
-                    `,
-                    variables: { email, password }
-                })
+            const { data } = await loginMutation({
+                variables: { email, password }
             });
 
-            const result = await response.json();
+            const { token: newToken, userId } = data.login;
 
-            // 2. Controlliamo se ci sono errori
-            if (result.errors) {
-                throw new Error(result.errors[0].message);
-            }
+            // 1. Salva Token
+            localStorage.setItem('auth_token', newToken);
+            setToken(newToken);
 
-            // 3. Prendiamo il token vero dalla risposta
-            const realToken = result.data.login.token;
+            // 2. Scarica subito i dati dell'utente
+            await getMe();
 
-            // 4. Salviamo il token vero (non quello finto!)
-            localStorage.setItem('auth_token', realToken);
-            setToken(realToken);
-
-            // Ricarichiamo per aggiornare l'interfaccia
-            window.location.reload();
-
+            return true; // Login riuscito
         } catch (error) {
-            console.error("Login fallito:", error);
-            alert("Errore login: " + error.message);
+            console.error("Errore Login:", error);
+            throw new Error(error.message || "Credenziali errate");
         }
     };
 
+    // --- FUNZIONE REGISTRAZIONE ---
+    const register = async (email, password, address) => {
+        try {
+            await registerMutation({
+                variables: { email, password, address }
+            });
+            // Dopo la registrazione, facciamo subito il login automatico
+            await login(email, password);
+            return true;
+        } catch (error) {
+            console.error("Errore Registrazione:", error);
+            throw error;
+        }
+    };
+
+    // --- FUNZIONE LOGOUT ---
     const logout = () => {
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_token'); // Rimuovi il token
         setToken(null);
-        window.location.reload();
+        setUser(null);
+        client.clearStore(); // Svuota la cache di Apollo (prodotti, carrello, ecc.)
+        window.location.href = '/'; // Ricarica pulita alla home
     };
 
     return (
-        <AuthContext.Provider value={{ token, isAuth: !!token, login, logout }}>
+        <AuthContext.Provider value={{
+            token,
+            isAuth: !!token, // True se il token esiste
+            user,
+            login,
+            logout,
+            register
+        }}>
             {children}
         </AuthContext.Provider>
     );
