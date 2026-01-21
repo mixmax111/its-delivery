@@ -46,18 +46,24 @@ export const AuthProvider = ({ children }) => {
                 variables: { email, password }
             });
 
-            const { token: newToken, userId } = data.login;
+            if (data && data.login) {
+                const { token: newToken } = data.login;
 
-            // 1. Salva Token
-            localStorage.setItem('auth_token', newToken);
-            setToken(newToken);
+                // 1. Salva Token immediatamente
+                localStorage.setItem('auth_token', newToken);
+                setToken(newToken);
 
-            // 2. Scarica subito i dati dell'utente
-            await getMe();
+                // 2. Forza Apollo a resettare il database interno così legge il nuovo token
+                await client.resetStore();
 
-            return true; // Login riuscito
+                // 3. Recupera i dati utente
+                await getMe();
+
+                return true;
+            }
         } catch (error) {
             console.error("Errore Login:", error);
+            // Se l'errore è "Not found" o simili, almeno sappiamo perché
             throw new Error(error.message || "Credenziali errate");
         }
     };
