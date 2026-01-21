@@ -15,9 +15,12 @@ export const AuthProvider = ({ children }) => {
     const [getMe] = useLazyQuery(GET_ME, {
         fetchPolicy: 'network-only',
         onCompleted: (data) => { if (data && data.me) setUser(data.me); },
-        onError: () => logout()
+        onError: (error) => {
+            console.error("ERRORE GET_ME:", error.message);
+            // Commenta logout() per un attimo per vedere se rimani loggato
+            // logout();
+        }
     });
-
     useEffect(() => {
         if (token && !user) getMe();
     }, [token, user, getMe]);
