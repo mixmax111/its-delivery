@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-// LOGIN
+// 1. LOGIN
 export const LOGIN_MUTATION = gql`
     mutation Login($email: String!, $password: String!) {
         login(email: $email, password: $password) {
@@ -10,7 +10,7 @@ export const LOGIN_MUTATION = gql`
     }
 `;
 
-// PROFILO UTENTE
+// 2. PROFILO UTENTE
 export const GET_ME = gql`
     query Me {
         me {
@@ -22,7 +22,7 @@ export const GET_ME = gql`
     }
 `;
 
-// REGISTRAZIONE
+// 3. REGISTRAZIONE
 export const REGISTER_USER = gql`
     mutation Register($email: String!, $password: String!, $address: String) {
         registerUser(email: $email, password: $password, address: $address) {
@@ -32,7 +32,7 @@ export const REGISTER_USER = gql`
     }
 `;
 
-// MENU PIZZE
+// 4. MENU PIZZE
 export const GET_MENU = gql`
     query GetMenu {
         getMenu {
@@ -40,30 +40,30 @@ export const GET_MENU = gql`
             name
             description
             price
-            image_url
+            image_url  # <--- Coerente con la tabella SQL 'products'
             category
         }
     }
 `;
 
-// CREA ORDINE
+// 5. CREA ORDINE
 export const CREATE_ORDER = gql`
     mutation CreateOrder($productIds: [ID], $quantities: [Float]) {
         createOrder(productIds: $productIds, quantities: $quantities) {
             id
-            totalAmount
+            total_amount # <--- Coerente con la tabella SQL 'orders'
         }
     }
 `;
 
-// I MIEI ORDINI
+// 6. I MIEI ORDINI
 export const GET_MY_ORDERS = gql`
     query GetMyOrders {
         getMyOrders {
             id
-            totalAmount
+            total_amount # <--- Coerente con la tabella SQL 'orders'
             status
-            createdAt
+            created_at   # <--- Coerente con la tabella SQL 'orders'
             items {
                 quantity
                 product {
