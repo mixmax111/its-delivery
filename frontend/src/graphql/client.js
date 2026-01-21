@@ -2,8 +2,8 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-
-    uri: 'https://adanna-sja34.herokuapp.com/graphql',
+    // ECCOLO! L'indirizzo nuovo che funziona:
+    uri: 'https://adanna-sja34-87786fd1c68b.herokuapp.com/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
