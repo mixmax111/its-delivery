@@ -5,6 +5,7 @@ const httpLink = createHttpLink({
     uri: import.meta.env.VITE_API_URL || 'http://localhost:4001/graphql',
 });
 
+
 const authLink = setContext((_, { headers }) => {
     const token = localStorage.getItem('auth_token');
     return {
