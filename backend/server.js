@@ -37,7 +37,7 @@ app.use('/graphql', graphqlHTTP((req) => ({
     }
 })));
 
-// Test DB
+// Test DB 2
 (async () => {
     try {
         await db.query("SELECT 1");
