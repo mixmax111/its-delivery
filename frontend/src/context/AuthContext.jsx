@@ -14,11 +14,11 @@ export const AuthProvider = ({ children }) => {
 
     const [getMe] = useLazyQuery(GET_ME, {
         fetchPolicy: 'network-only',
-        onCompleted: (data) => { if (data && data.me) setUser(data.me); },
+        onCompleted: (data) => {
+            if (data && data.me) setUser(data.me);
+        },
         onError: (error) => {
-            console.error("ERRORE GET_ME:", error.message);
-            // Commenta logout() per un attimo per vedere se rimani loggato
-            // logout();
+            console.error("DEBUG GET_ME:", error);
         }
     });
     useEffect(() => {
