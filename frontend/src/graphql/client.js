@@ -2,12 +2,13 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-    // COPIA QUESTO LINK ESATTO (È QUELLO NUOVO CHE FUNZIONA!)
     uri: 'https://adanna-sja34-87786fd1c68b.herokuapp.com/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
-    const token = localStorage.getItem('token');
+    // CORREZIONE QUI: Usiamo 'auth_token' invece di 'token'
+    const token = localStorage.getItem('auth_token');
+
     return {
         headers: {
             ...headers,
