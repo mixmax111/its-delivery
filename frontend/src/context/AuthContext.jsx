@@ -51,15 +51,11 @@ export const AuthProvider = ({ children }) => {
             if (data && data.login) {
                 const { token: newToken } = data.login;
 
-                // Salva token
                 localStorage.setItem('auth_token', newToken);
+
                 setToken(newToken);
 
-                // Resetta Apollo (Fondamentale)
-                await client.resetStore();
-
-                // Prova a scaricare i dati utente
-                await getMe();
+                window.location.reload();
 
                 return true;
             }
@@ -68,7 +64,6 @@ export const AuthProvider = ({ children }) => {
             throw new Error(error.message || "Credenziali errate");
         }
     };
-
     // 6. Funzione Register
     const register = async (email, password, address) => {
         try {
