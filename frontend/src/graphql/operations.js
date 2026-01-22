@@ -10,14 +10,14 @@ export const LOGIN_MUTATION = gql`
     }
 `;
 
-// 2. PROFILO UTENTE
+// 2. PROFILO UTENTE (Ora 'address' esiste nel backend, quindi non crasha!)
 export const GET_ME = gql`
     query Me {
         me {
             id
             email
             role
-            # address
+            address
         }
     }
 `;
@@ -32,7 +32,7 @@ export const REGISTER_USER = gql`
     }
 `;
 
-// 4. MENU PIZZE
+// 4. MENU PIZZE (Chiediamo image_url con l'underscore)
 export const GET_MENU = gql`
     query GetMenu {
         getMenu {
@@ -40,7 +40,7 @@ export const GET_MENU = gql`
             name
             description
             price
-            image_url  # <--- Coerente con la tabella SQL 'products'
+            image_url
             category
         }
     }
@@ -51,19 +51,18 @@ export const CREATE_ORDER = gql`
     mutation CreateOrder($productIds: [ID], $quantities: [Float]) {
         createOrder(productIds: $productIds, quantities: $quantities) {
             id
-            total_amount # <--- Coerente con la tabella SQL 'orders'
+            total_amount
         }
     }
 `;
 
-// 6. I MIEI ORDINI
 export const GET_MY_ORDERS = gql`
     query GetMyOrders {
         getMyOrders {
             id
-            total_amount # <--- Coerente con la tabella SQL 'orders'
+            total_amount
             status
-            created_at   # <--- Coerente con la tabella SQL 'orders'
+            created_at
             items {
                 quantity
                 product {
